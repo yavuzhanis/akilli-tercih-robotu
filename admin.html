@@ -1,0 +1,1157 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Admin Paneli | Akıllı Tercih Sistemi</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="theme-color" content="#f8fafc" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%232563eb'/%3E%3Ctext x='32' y='39' text-anchor='middle' font-family='Arial' font-size='22' font-weight='800' fill='white'%3EAT%3C/text%3E%3C/svg%3E"
+    />
+    <script>
+      try {
+        if (localStorage.getItem("theme") === "dark") {
+          document.documentElement.dataset.theme = "dark";
+        }
+      } catch (error) {}
+    </script>
+    <link rel="stylesheet" href="assets/css/style.css" />
+  </head>
+  <body class="admin-page">
+    <header class="site-header">
+      <nav class="nav container" aria-label="Admin menüsü">
+        <a class="brand" href="/" aria-label="Akıllı Tercih ana sayfa">
+          <span class="brand-mark">AT</span>
+          <span>
+            <strong>Akıllı Tercih</strong>
+            <small>Admin Paneli</small>
+          </span>
+        </a>
+        <div class="nav-links admin-nav-links">
+          <a href="/">Siteye Dön</a>
+        </div>
+        <button
+          class="theme-toggle"
+          type="button"
+          id="themeToggle"
+          aria-label="Tema değiştir"
+          aria-pressed="false"
+        >
+          <span class="theme-dot" aria-hidden="true"></span>
+          <span id="themeToggleText">Koyu mod</span>
+        </button>
+      </nav>
+    </header>
+
+    <main class="admin-main">
+      <section class="admin-hero container">
+        <div>
+          <span class="eyebrow">Operasyon Paneli</span>
+          <h1>Aday kayıtları ve program kataloğu</h1>
+          <p>
+            Form kayıtlarını takip et, danışmanlık pipeline’ını güncelle ve
+            yayındaki program kataloğunu tek ekrandan yönet.
+          </p>
+        </div>
+      </section>
+
+      <section class="container admin-login-wrap" id="loginPanel">
+        <form class="admin-login-card" id="adminLoginForm">
+          <div>
+            <span class="eyebrow">Admin Girişi</span>
+            <h2>Paneli aç</h2>
+          </div>
+          <label for="adminEmail">E-posta</label>
+          <input
+            id="adminEmail"
+            name="email"
+            type="email"
+            autocomplete="username"
+            placeholder="admin@example.com"
+            required
+          />
+          <label for="adminPassword">Şifre</label>
+          <input
+            id="adminPassword"
+            name="password"
+            type="password"
+            autocomplete="current-password"
+            placeholder="Admin şifresi"
+            required
+          />
+          <button class="btn btn-primary" type="submit" id="loginBtn">
+            Giriş Yap
+          </button>
+          <p class="admin-status" id="loginStatus" aria-live="polite"></p>
+        </form>
+      </section>
+
+      <section class="container admin-dashboard" id="adminPanel" hidden>
+        <div class="admin-toolbar">
+          <div>
+            <span class="eyebrow">Dashboard</span>
+            <h2>Operasyon Yönetimi</h2>
+          </div>
+          <div class="admin-toolbar-actions">
+            <button class="btn btn-light" type="button" id="refreshBtn">
+              Yenile
+            </button>
+            <button class="btn btn-light" type="button" id="exportCsvBtn">
+              CSV İndir
+            </button>
+            <button class="btn btn-ghost" type="button" id="logoutBtn">
+              Çıkış
+            </button>
+          </div>
+        </div>
+
+        <p class="admin-status" id="adminNotice" aria-live="polite"></p>
+        <p class="admin-role-scope" id="roleScopeNotice" hidden></p>
+
+        <div class="admin-tabs" role="tablist" aria-label="Admin bölümleri">
+          <button
+            class="admin-tab is-active"
+            type="button"
+            role="tab"
+            aria-selected="true"
+            data-admin-tab="overview"
+          >
+            Özet
+          </button>
+          <button
+            class="admin-tab"
+            type="button"
+            role="tab"
+            aria-selected="false"
+            data-admin-tab="reports"
+          >
+            Raporlama
+          </button>
+          <button
+            class="admin-tab"
+            type="button"
+            role="tab"
+            aria-selected="false"
+            data-admin-tab="notifications"
+          >
+            Bildirimler
+          </button>
+          <button
+            class="admin-tab"
+            type="button"
+            role="tab"
+            aria-selected="false"
+            data-admin-tab="messaging"
+          >
+            Mesajlaşma
+          </button>
+          <button
+            class="admin-tab"
+            type="button"
+            role="tab"
+            aria-selected="false"
+            data-admin-tab="leads"
+          >
+            Adaylar
+          </button>
+          <button
+            class="admin-tab"
+            type="button"
+            role="tab"
+            aria-selected="false"
+            data-admin-tab="programs"
+          >
+            Programlar
+          </button>
+          <button
+            class="admin-tab"
+            type="button"
+            role="tab"
+            aria-selected="false"
+            data-admin-tab="users"
+          >
+            Kullanıcılar
+          </button>
+          <button
+            class="admin-tab"
+            type="button"
+            role="tab"
+            aria-selected="false"
+            data-admin-tab="settings"
+          >
+            Ayarlar
+          </button>
+          <button
+            class="admin-tab"
+            type="button"
+            role="tab"
+            aria-selected="false"
+            data-admin-tab="integrations"
+          >
+            Entegrasyonlar
+          </button>
+          <button
+            class="admin-tab"
+            type="button"
+            role="tab"
+            aria-selected="false"
+            data-admin-tab="audit"
+          >
+            İşlem Geçmişi
+          </button>
+          <button
+            class="admin-tab"
+            type="button"
+            role="tab"
+            aria-selected="false"
+            data-admin-tab="backlog"
+          >
+            Eksikler
+          </button>
+        </div>
+
+        <section
+          class="admin-tab-panel is-active"
+          role="tabpanel"
+          data-admin-panel="overview"
+        >
+          <div class="admin-stat-grid" id="statGrid"></div>
+
+          <div class="admin-overview-grid">
+            <aside class="admin-card">
+              <div class="admin-card-head">
+                <div>
+                  <strong>Program İlgisi</strong>
+                  <span>Seçim yoğunluğu</span>
+                </div>
+              </div>
+              <div class="program-interest-list" id="programInterestList"></div>
+            </aside>
+
+            <aside class="admin-card">
+              <div class="admin-card-head">
+                <div>
+                  <strong>Ürün Öncelikleri</strong>
+                  <span>Product öncesi durum</span>
+                </div>
+              </div>
+              <ol class="admin-priority-list">
+                <li>Ana eksik listesi tamamlandı</li>
+                <li>Canlı veri ve kurum onayı ile kabul testi</li>
+              </ol>
+            </aside>
+          </div>
+        </section>
+
+        <section
+          class="admin-tab-panel"
+          role="tabpanel"
+          data-admin-panel="reports"
+        >
+          <section class="admin-card admin-report-card">
+            <div class="admin-card-head">
+              <div>
+                <strong>Aday Raporu</strong>
+                <span>Dönem performansı, dönüşüm ve program ilgisi</span>
+              </div>
+              <button class="btn btn-light" type="button" id="reportExportBtn">
+                Rapor CSV
+              </button>
+            </div>
+            <div class="admin-filters admin-report-filters">
+              <label>
+                Başlangıç
+                <input id="reportStartDate" type="date" />
+              </label>
+              <label>
+                Bitiş
+                <input id="reportEndDate" type="date" />
+              </label>
+              <button class="btn btn-primary" type="button" id="reportRefreshBtn">
+                Raporu Yenile
+              </button>
+            </div>
+            <p class="admin-status admin-report-status" id="reportStatus" aria-live="polite"></p>
+            <div class="admin-stat-grid admin-report-summary" id="reportSummaryGrid"></div>
+          </section>
+
+          <div class="admin-report-grid">
+            <section class="admin-card">
+              <div class="admin-card-head">
+                <div>
+                  <strong>Pipeline Dağılımı</strong>
+                  <span>Durum bazlı aday sayısı</span>
+                </div>
+              </div>
+              <div class="admin-report-list" id="reportStatusList"></div>
+            </section>
+
+            <section class="admin-card">
+              <div class="admin-card-head">
+                <div>
+                  <strong>Günlük Akış</strong>
+                  <span>Seçili aralıkta gelen kayıtlar</span>
+                </div>
+              </div>
+              <div class="admin-report-list" id="reportDailyList"></div>
+            </section>
+
+            <section class="admin-card">
+              <div class="admin-card-head">
+                <div>
+                  <strong>Program İlgisi</strong>
+                  <span>En çok seçilen programlar</span>
+                </div>
+              </div>
+              <div class="admin-report-list" id="reportProgramList"></div>
+            </section>
+
+            <section class="admin-card">
+              <div class="admin-card-head">
+                <div>
+                  <strong>Kaynak Dağılımı</strong>
+                  <span>Adayların geldiği kanal</span>
+                </div>
+              </div>
+              <div class="admin-report-list" id="reportSourceList"></div>
+            </section>
+
+            <section class="admin-card">
+              <div class="admin-card-head">
+                <div>
+                  <strong>Danışman Performansı</strong>
+                  <span>Atama, randevu ve kayıt dönüşümü</span>
+                </div>
+              </div>
+              <div class="admin-report-list" id="reportAdvisorList"></div>
+            </section>
+          </div>
+        </section>
+
+        <section
+          class="admin-tab-panel"
+          role="tabpanel"
+          data-admin-panel="notifications"
+        >
+          <div class="admin-filters admin-notification-filters">
+            <label class="sr-only" for="notificationStatusFilter">Bildirim durumu</label>
+            <select id="notificationStatusFilter">
+              <option value="unread">Okunmamış</option>
+              <option value="all">Tümü</option>
+              <option value="read">Okunmuş</option>
+            </select>
+            <label class="sr-only" for="notificationTypeFilter">Bildirim türü</label>
+            <select id="notificationTypeFilter">
+              <option value="all">Tüm türler</option>
+              <option value="new_lead">Yeni aday</option>
+              <option value="follow_up">Takip hatırlatması</option>
+              <option value="appointment">Randevu</option>
+              <option value="system">Sistem</option>
+            </select>
+            <label class="sr-only" for="notificationPageSize">Sayfa başına bildirim</label>
+            <select id="notificationPageSize">
+              <option value="12">12 kayıt</option>
+              <option value="24">24 kayıt</option>
+              <option value="48">48 kayıt</option>
+            </select>
+          </div>
+
+          <section class="admin-card">
+            <div class="admin-card-head">
+              <div>
+                <strong>Bildirim Merkezi</strong>
+                <span id="notificationCountLabel">0 bildirim</span>
+              </div>
+              <button class="btn btn-light" type="button" id="markAllNotificationsBtn">
+                Tümünü okundu yap
+              </button>
+            </div>
+            <div class="admin-notification-list" id="notificationList"></div>
+            <div class="admin-pagination" aria-label="Bildirim sayfaları">
+              <button class="btn btn-light" type="button" id="notificationPrevBtn">
+                Önceki
+              </button>
+              <span id="notificationPageLabel">1 / 1</span>
+              <button class="btn btn-light" type="button" id="notificationNextBtn">
+                Sonraki
+              </button>
+            </div>
+          </section>
+        </section>
+
+        <section
+          class="admin-tab-panel"
+          role="tabpanel"
+          data-admin-panel="messaging"
+        >
+          <section class="admin-card admin-message-card">
+            <div class="admin-card-head">
+              <div>
+                <strong>E-posta / SMS Şablonları</strong>
+                <span id="messageTemplateCountLabel">0 şablon</span>
+              </div>
+            </div>
+            <div class="admin-message-template-list" id="messageTemplateList"></div>
+          </section>
+
+          <div class="admin-filters admin-message-delivery-filters">
+            <label class="sr-only" for="messageDeliverySearch">Mesaj ara</label>
+            <input
+              id="messageDeliverySearch"
+              type="search"
+              placeholder="Aday, alıcı, konu veya mesaj ara..."
+            />
+            <label class="sr-only" for="messageDeliveryChannelFilter">Mesaj kanalı</label>
+            <select id="messageDeliveryChannelFilter">
+              <option value="all">Tüm kanallar</option>
+              <option value="email">E-posta</option>
+              <option value="sms">SMS</option>
+            </select>
+            <label class="sr-only" for="messageDeliveryStatusFilter">Gönderim durumu</label>
+            <select id="messageDeliveryStatusFilter">
+              <option value="all">Tüm durumlar</option>
+              <option value="sent">Gönderildi</option>
+              <option value="failed">Hatalı</option>
+              <option value="skipped">Atlandı</option>
+            </select>
+            <label class="sr-only" for="messageDeliveryPageSize">Sayfa başına mesaj</label>
+            <select id="messageDeliveryPageSize">
+              <option value="12">12 kayıt</option>
+              <option value="24">24 kayıt</option>
+              <option value="48">48 kayıt</option>
+            </select>
+          </div>
+
+          <section class="admin-card">
+            <div class="admin-card-head">
+              <div>
+                <strong>Gönderim Geçmişi</strong>
+                <span id="messageDeliveryCountLabel">0 gönderim</span>
+              </div>
+            </div>
+            <div class="admin-message-delivery-list" id="messageDeliveryList"></div>
+            <div class="admin-pagination" aria-label="Mesaj gönderim sayfaları">
+              <button class="btn btn-light" type="button" id="messageDeliveryPrevBtn">
+                Önceki
+              </button>
+              <span id="messageDeliveryPageLabel">1 / 1</span>
+              <button class="btn btn-light" type="button" id="messageDeliveryNextBtn">
+                Sonraki
+              </button>
+            </div>
+          </section>
+        </section>
+
+        <section class="admin-tab-panel" role="tabpanel" data-admin-panel="leads">
+          <div class="admin-filters">
+            <label class="sr-only" for="leadSearch">Aday ara</label>
+            <input
+              id="leadSearch"
+              type="search"
+              placeholder="Aday, telefon, e-posta veya program ara..."
+            />
+            <label class="sr-only" for="statusFilter">Durum filtrele</label>
+            <select id="statusFilter">
+              <option value="all">Tüm durumlar</option>
+              <option value="new">Yeni</option>
+              <option value="contacted">Görüşüldü</option>
+              <option value="appointment">Randevu</option>
+              <option value="qualified">Takipte</option>
+              <option value="applied">Başvurdu</option>
+              <option value="enrolled">Kayıt oldu</option>
+              <option value="lost">Vazgeçti</option>
+              <option value="archived">Arşiv</option>
+            </select>
+            <label class="sr-only" for="leadPageSize">Sayfa başına aday</label>
+            <select id="leadPageSize">
+              <option value="12">12 kayıt</option>
+              <option value="24">24 kayıt</option>
+              <option value="48">48 kayıt</option>
+            </select>
+          </div>
+
+          <section class="admin-card admin-leads-card">
+            <div class="admin-card-head">
+              <div>
+                <strong>Aday Kayıtları</strong>
+                <span id="leadCountLabel">0 kayıt</span>
+              </div>
+            </div>
+            <div class="admin-lead-list" id="leadsList"></div>
+            <div class="admin-pagination" aria-label="Aday sayfaları">
+              <button class="btn btn-light" type="button" id="leadPrevBtn">
+                Önceki
+              </button>
+              <span id="leadPageLabel">1 / 1</span>
+              <button class="btn btn-light" type="button" id="leadNextBtn">
+                Sonraki
+              </button>
+            </div>
+          </section>
+        </section>
+
+        <section
+          class="admin-card admin-program-manager admin-tab-panel"
+          id="programManager"
+          role="tabpanel"
+          data-admin-panel="programs"
+        >
+          <div class="admin-card-head">
+            <div>
+              <strong>Program Yönetimi</strong>
+              <span id="programCountLabel">0 program</span>
+            </div>
+          </div>
+
+          <form class="admin-import-panel" id="programImportForm">
+            <div class="admin-import-copy">
+              <span class="eyebrow">Toplu Import</span>
+              <h3>CSV ile program yükle</h3>
+              <p>
+                Slug varsa güncelleme modunda mevcut programlar yenilenir, yeni
+                sluglar katalog kaydı olarak eklenir.
+              </p>
+            </div>
+            <label>
+              CSV Dosyası
+              <input id="programImportFile" type="file" accept=".csv,text/csv" />
+            </label>
+            <label>
+              Import Modu
+              <select id="programImportMode">
+                <option value="upsert">Slug varsa güncelle</option>
+                <option value="create">Sadece yeni kayıt oluştur</option>
+              </select>
+            </label>
+            <label class="form-wide">
+              CSV Metni
+              <textarea
+                id="programImportText"
+                rows="5"
+                placeholder="Şablonu indirip doldurabilir veya CSV içeriğini buraya yapıştırabilirsin."
+              ></textarea>
+            </label>
+            <div class="admin-program-actions form-wide">
+              <button class="btn btn-primary" type="submit" id="programImportBtn">
+                CSV Import Et
+              </button>
+              <button class="btn btn-light" type="button" id="programTemplateBtn">
+                Şablon İndir
+              </button>
+            </div>
+            <div
+              class="admin-import-result form-wide"
+              id="programImportResult"
+              aria-live="polite"
+            ></div>
+          </form>
+
+          <div class="admin-program-layout">
+            <form class="admin-program-form" id="programForm">
+              <input type="hidden" name="mode" value="create" />
+              <input type="hidden" name="currentId" />
+              <div class="form-wide">
+                <span class="eyebrow">Katalog</span>
+                <h3 id="programFormTitle">Yeni program ekle</h3>
+              </div>
+              <label>
+                Program Adı
+                <input name="name" required placeholder="Program adı" />
+              </label>
+              <label>
+                Üniversite
+                <input name="university" required value="Kapadokya Üniversitesi" />
+              </label>
+              <label>
+                Slug
+                <input name="id" placeholder="Boş bırakılırsa otomatik oluşur" />
+              </label>
+              <label>
+                Fakülte
+                <input name="faculty" required placeholder="Fakülte / MYO" />
+              </label>
+              <label>
+                Puan Türü
+                <select name="scoreType" required>
+                  <option value="SAY">SAY</option>
+                  <option value="EA">EA</option>
+                  <option value="SÖZ">SÖZ</option>
+                  <option value="DİL">DİL</option>
+                  <option value="TYT">TYT</option>
+                </select>
+              </label>
+              <label>
+                Eğitim Türü
+                <select name="educationType" required>
+                  <option value="Örgün">Örgün</option>
+                  <option value="Uzaktan">Uzaktan</option>
+                </select>
+              </label>
+              <label>
+                Kategori
+                <select name="category" required>
+                  <option value="bilişim">Bilişim</option>
+                  <option value="sağlık">Sağlık</option>
+                  <option value="sosyal">Sosyal</option>
+                  <option value="dil">Dil</option>
+                  <option value="tasarım">Tasarım</option>
+                  <option value="turizm">Turizm</option>
+                  <option value="havacılık">Havacılık</option>
+                </select>
+              </label>
+              <label>
+                Kampüs
+                <input name="campus" required placeholder="Kampüs" />
+              </label>
+              <label>
+                Şehir
+                <input name="city" required value="Nevsehir" />
+              </label>
+              <label>
+                Süre
+                <select name="duration" required>
+                  <option value="2 yıl">2 yıl</option>
+                  <option value="4 yıl">4 yıl</option>
+                  <option value="5 yıl">5 yıl</option>
+                </select>
+              </label>
+              <label>
+                Dil
+                <select name="language" required>
+                  <option value="Türkçe">Türkçe</option>
+                  <option value="İngilizce">İngilizce</option>
+                </select>
+              </label>
+              <label>
+                Kontenjan
+                <input name="quota" type="number" min="0" required />
+              </label>
+              <label>
+                Taban Puan
+                <input name="baseScore" type="number" min="0" step="0.01" required />
+              </label>
+              <label>
+                Başarı Sırası
+                <input name="rank" required placeholder="Örn. 25.200" />
+              </label>
+              <label>
+                Veri Yılı
+                <input name="sourceYear" required value="2025 YKS" />
+              </label>
+              <label>
+                Veri Durumu
+                <input name="sourceStatus" required value="Resmi aday sayfası" />
+              </label>
+              <label>
+                Yayın Durumu
+                <select name="isActive">
+                  <option value="true">Yayında</option>
+                  <option value="false">Pasif</option>
+                </select>
+              </label>
+              <label class="form-wide">
+                Burs Seçenekleri
+                <input name="scholarshipOptions" required placeholder="Burslu, %25 İndirimli, %50 İndirimli, Ücretli" />
+              </label>
+              <label class="form-wide">
+                Kariyer Alanları
+                <input name="careers" required placeholder="Veri analisti, Yazılım geliştirici" />
+              </label>
+              <label class="form-wide">
+                Öncelikler
+                <input name="priorities" required placeholder="kariyer, teknoloji, uygulama" />
+              </label>
+              <label class="form-wide">
+                Özet
+                <textarea name="summary" required rows="4" placeholder="Program açıklaması"></textarea>
+              </label>
+              <div class="admin-program-actions form-wide">
+                <button class="btn btn-primary" type="submit" id="programSaveBtn">
+                  Programı Kaydet
+                </button>
+                <button class="btn btn-light" type="button" id="programResetBtn">
+                  Temizle
+                </button>
+              </div>
+            </form>
+
+            <div class="admin-program-side">
+              <div class="admin-filters admin-program-filters">
+                <label class="sr-only" for="programSearch">Program ara</label>
+                <input id="programSearch" type="search" placeholder="Program veya fakülte ara..." />
+                <label class="sr-only" for="programStatusFilter">Program durumu</label>
+                <select id="programStatusFilter">
+                  <option value="all">Tüm programlar</option>
+                  <option value="active" selected>Yayında</option>
+                  <option value="inactive">Pasif</option>
+                </select>
+                <label class="sr-only" for="programPageSize">Sayfa başına program</label>
+                <select id="programPageSize">
+                  <option value="12">12 kayıt</option>
+                  <option value="24">24 kayıt</option>
+                  <option value="48">48 kayıt</option>
+                </select>
+              </div>
+              <div class="admin-program-list" id="programList"></div>
+              <div class="admin-pagination" aria-label="Program sayfaları">
+                <button class="btn btn-light" type="button" id="programPrevBtn">
+                  Önceki
+                </button>
+                <span id="programPageLabel">1 / 1</span>
+                <button class="btn btn-light" type="button" id="programNextBtn">
+                  Sonraki
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="admin-tab-panel" role="tabpanel" data-admin-panel="backlog">
+          <div class="admin-backlog-grid">
+            <article class="admin-backlog-card">
+              <span>OK</span>
+              <h3>Eksik Listesi Tamamlandı</h3>
+              <p>Front, backend, admin, raporlama, CRM, mesajlaşma, rol kapsamı ve canlı güvenlik sertleştirme tamamlandı.</p>
+            </article>
+            <article class="admin-backlog-card">
+              <span>QA</span>
+              <h3>Product Kabul Kontrolü</h3>
+              <p>Yayın sonrası KVKK metni, canlı sağlayıcılar, domain ayarı ve kullanıcı kabul testi doğrulanmalı.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="admin-tab-panel" role="tabpanel" data-admin-panel="settings">
+          <section class="admin-card admin-settings-card">
+            <div class="admin-card-head">
+              <div>
+                <strong>Site Ayarları</strong>
+                <span>Marka, iletişim ve KVKK metinleri</span>
+              </div>
+            </div>
+            <form class="admin-settings-form" id="settingsForm">
+              <div class="form-wide">
+                <span class="eyebrow">Marka</span>
+                <h3>Görünür site metinleri</h3>
+              </div>
+              <label>
+                Marka Kısaltması
+                <input name="brandMark" maxlength="4" required />
+              </label>
+              <label>
+                Marka Adı
+                <input name="brandName" required />
+              </label>
+              <label>
+                Marka Alt Başlığı
+                <input name="brandSubtitle" required />
+              </label>
+              <label>
+                Sayfa Başlığı
+                <input name="siteTitle" required />
+              </label>
+              <label class="form-wide">
+                SEO Açıklaması
+                <textarea name="siteDescription" rows="3" required></textarea>
+              </label>
+              <label>
+                Hero Etiketi
+                <input name="heroEyebrow" required />
+              </label>
+              <label>
+                Footer Başlığı
+                <input name="footerTitle" required />
+              </label>
+              <label class="form-wide">
+                Hero Başlığı
+                <textarea name="heroTitle" rows="2" required></textarea>
+              </label>
+              <label class="form-wide">
+                Hero Açıklaması
+                <textarea name="heroDescription" rows="3" required></textarea>
+              </label>
+              <label class="form-wide">
+                Footer Metni
+                <textarea name="footerText" rows="2" required></textarea>
+              </label>
+
+              <div class="form-wide">
+                <span class="eyebrow">İletişim</span>
+                <h3>Danışma bilgileri</h3>
+              </div>
+              <label>
+                İletişim E-posta
+                <input name="contactEmail" type="email" />
+              </label>
+              <label>
+                İletişim Telefon
+                <input name="contactPhone" />
+              </label>
+              <label class="form-wide">
+                Adres / Ofis Bilgisi
+                <textarea name="contactAddress" rows="2"></textarea>
+              </label>
+
+              <div class="form-wide">
+                <span class="eyebrow">KVKK</span>
+                <h3>Aydınlatma metni</h3>
+              </div>
+              <label class="form-wide">
+                KVKK Başlığı
+                <input name="kvkkTitle" required />
+              </label>
+              <label class="form-wide">
+                KVKK Metni
+                <textarea name="kvkkText" rows="7" required></textarea>
+              </label>
+              <div class="admin-program-actions form-wide">
+                <button class="btn btn-primary" type="submit" id="settingsSaveBtn">
+                  Ayarları Kaydet
+                </button>
+                <span class="admin-status" id="settingsStatus" aria-live="polite"></span>
+              </div>
+            </form>
+          </section>
+        </section>
+
+        <section class="admin-tab-panel" role="tabpanel" data-admin-panel="users">
+          <section class="admin-card admin-user-manager">
+            <div class="admin-card-head">
+              <div>
+                <strong>Kullanıcı Yönetimi</strong>
+                <span id="userCountLabel">0 kullanıcı</span>
+              </div>
+            </div>
+
+            <div class="admin-user-layout">
+              <form class="admin-user-form" id="userForm">
+                <input type="hidden" name="mode" value="create" />
+                <input type="hidden" name="currentId" />
+                <div class="form-wide">
+                  <span class="eyebrow">Ekip</span>
+                  <h3 id="userFormTitle">Yeni kullanıcı ekle</h3>
+                </div>
+                <label>
+                  Ad Soyad
+                  <input name="name" required placeholder="Kullanıcı adı" />
+                </label>
+                <label>
+                  E-posta
+                  <input name="email" type="email" required placeholder="kullanici@example.com" />
+                </label>
+                <label>
+                  Rol
+                  <select name="role" required>
+                    <option value="admin">Admin</option>
+                    <option value="advisor">Danışman</option>
+                    <option value="editor">Editör</option>
+                  </select>
+                </label>
+                <label>
+                  Durum
+                  <select name="isActive">
+                    <option value="true">Aktif</option>
+                    <option value="false">Pasif</option>
+                  </select>
+                </label>
+                <label class="form-wide">
+                  Şifre
+                  <input name="password" type="password" autocomplete="new-password" placeholder="Yeni kullanıcı için zorunlu" />
+                </label>
+                <div class="admin-program-actions form-wide">
+                  <button class="btn btn-primary" type="submit" id="userSaveBtn">
+                    Kullanıcıyı Kaydet
+                  </button>
+                  <button class="btn btn-light" type="button" id="userResetBtn">
+                    Temizle
+                  </button>
+                </div>
+              </form>
+
+              <div class="admin-user-list" id="userList"></div>
+            </div>
+          </section>
+        </section>
+
+        <section class="admin-tab-panel" role="tabpanel" data-admin-panel="integrations">
+          <section class="admin-card admin-crm-card">
+            <div class="admin-card-head">
+              <div>
+                <strong>CRM / Webhook</strong>
+                <span>Aday olaylarını dış sisteme aktar</span>
+              </div>
+              <button class="btn btn-light" type="button" id="crmTestBtn">
+                Test Gönder
+              </button>
+            </div>
+
+            <form class="admin-settings-form admin-crm-form" id="crmForm">
+              <div class="form-wide">
+                <span class="eyebrow">Webhook</span>
+                <h3>Entegrasyon ayarları</h3>
+              </div>
+              <label>
+                Entegrasyon Adı
+                <input name="name" required placeholder="CRM Webhook" />
+              </label>
+              <label>
+                Durum
+                <select name="isEnabled">
+                  <option value="false">Pasif</option>
+                  <option value="true">Aktif</option>
+                </select>
+              </label>
+              <label class="form-wide">
+                Webhook URL
+                <input name="webhookUrl" type="url" placeholder="https://crm.example.com/webhook" />
+              </label>
+              <label class="form-wide">
+                Gizli İmza Anahtarı
+                <input
+                  name="secret"
+                  type="password"
+                  autocomplete="new-password"
+                  placeholder="Değişmeyecekse boş bırak"
+                />
+              </label>
+              <div class="form-wide admin-crm-events">
+                <span>Gönderilecek olaylar</span>
+                <label>
+                  <input type="checkbox" name="events" value="lead.created" />
+                  Yeni aday oluşunca gönder
+                </label>
+                <label>
+                  <input type="checkbox" name="events" value="lead.updated" />
+                  Aday güncellenince gönder
+                </label>
+              </div>
+              <div class="admin-program-actions form-wide">
+                <button class="btn btn-primary" type="submit" id="crmSaveBtn">
+                  Entegrasyonu Kaydet
+                </button>
+                <span class="admin-status" id="crmStatus" aria-live="polite"></span>
+              </div>
+            </form>
+          </section>
+
+          <div class="admin-filters admin-crm-delivery-filters">
+            <label class="sr-only" for="crmDeliverySearch">Gönderim ara</label>
+            <input
+              id="crmDeliverySearch"
+              type="search"
+              placeholder="Aday, olay, URL veya hata ara..."
+            />
+            <label class="sr-only" for="crmDeliveryStatusFilter">Gönderim durumu</label>
+            <select id="crmDeliveryStatusFilter">
+              <option value="all">Tüm durumlar</option>
+              <option value="success">Başarılı</option>
+              <option value="failed">Hatalı</option>
+              <option value="skipped">Atlandı</option>
+            </select>
+            <label class="sr-only" for="crmDeliveryEventFilter">Gönderim olayı</label>
+            <select id="crmDeliveryEventFilter">
+              <option value="all">Tüm olaylar</option>
+              <option value="lead.created">Yeni aday</option>
+              <option value="lead.updated">Aday güncellendi</option>
+              <option value="test.ping">Test</option>
+            </select>
+            <label class="sr-only" for="crmDeliveryPageSize">Sayfa başına gönderim</label>
+            <select id="crmDeliveryPageSize">
+              <option value="12">12 kayıt</option>
+              <option value="24">24 kayıt</option>
+              <option value="48">48 kayıt</option>
+            </select>
+          </div>
+
+          <section class="admin-card">
+            <div class="admin-card-head">
+              <div>
+                <strong>Gönderim Geçmişi</strong>
+                <span id="crmDeliveryCountLabel">0 gönderim</span>
+              </div>
+            </div>
+            <div class="admin-crm-delivery-list" id="crmDeliveryList"></div>
+            <div class="admin-pagination" aria-label="CRM gönderim sayfaları">
+              <button class="btn btn-light" type="button" id="crmDeliveryPrevBtn">
+                Önceki
+              </button>
+              <span id="crmDeliveryPageLabel">1 / 1</span>
+              <button class="btn btn-light" type="button" id="crmDeliveryNextBtn">
+                Sonraki
+              </button>
+            </div>
+          </section>
+        </section>
+
+        <section class="admin-tab-panel" role="tabpanel" data-admin-panel="audit">
+          <div class="admin-filters admin-audit-filters">
+            <label class="sr-only" for="auditSearch">İşlem ara</label>
+            <input
+              id="auditSearch"
+              type="search"
+              placeholder="Kullanıcı, işlem, kayıt veya detay ara..."
+            />
+            <label class="sr-only" for="auditActionFilter">İşlem tipi</label>
+            <select id="auditActionFilter">
+              <option value="all">Tüm işlemler</option>
+              <option value="login">Giriş</option>
+              <option value="create">Oluşturma</option>
+              <option value="update">Güncelleme</option>
+              <option value="delete">Silme / pasife alma</option>
+              <option value="import">Import</option>
+            </select>
+            <label class="sr-only" for="auditEntityFilter">Kayıt tipi</label>
+            <select id="auditEntityFilter">
+              <option value="all">Tüm kayıt tipleri</option>
+              <option value="session">Oturum</option>
+              <option value="lead">Aday</option>
+              <option value="lead_activity">Aday geçmişi</option>
+              <option value="program">Program</option>
+              <option value="program_import">Program import</option>
+              <option value="admin_user">Kullanıcı</option>
+              <option value="site_settings">Site ayarları</option>
+              <option value="notification">Bildirim</option>
+              <option value="crm_integration">CRM entegrasyonu</option>
+              <option value="crm_delivery">CRM gönderimi</option>
+              <option value="message_template">Mesaj şablonu</option>
+              <option value="message_delivery">Mesaj gönderimi</option>
+            </select>
+            <label class="sr-only" for="auditPageSize">Sayfa başına işlem</label>
+            <select id="auditPageSize">
+              <option value="12">12 kayıt</option>
+              <option value="24">24 kayıt</option>
+              <option value="48">48 kayıt</option>
+            </select>
+          </div>
+
+          <section class="admin-card">
+            <div class="admin-card-head">
+              <div>
+                <strong>İşlem Geçmişi</strong>
+                <span id="auditCountLabel">0 işlem</span>
+              </div>
+            </div>
+            <div class="admin-audit-list" id="auditList"></div>
+            <div class="admin-pagination" aria-label="İşlem geçmişi sayfaları">
+              <button class="btn btn-light" type="button" id="auditPrevBtn">
+                Önceki
+              </button>
+              <span id="auditPageLabel">1 / 1</span>
+              <button class="btn btn-light" type="button" id="auditNextBtn">
+                Sonraki
+              </button>
+            </div>
+          </section>
+        </section>
+      </section>
+    </main>
+
+    <dialog class="admin-detail-modal" id="leadDetailModal">
+      <div class="admin-detail-shell">
+        <div class="admin-detail-head">
+          <div>
+            <span class="eyebrow">Aday Detayı</span>
+            <h2 id="leadDetailTitle">Aday</h2>
+            <p id="leadDetailMeta"></p>
+          </div>
+          <button
+            class="modal-close"
+            type="button"
+            id="leadDetailClose"
+            aria-label="Detayı kapat"
+          >
+            Kapat
+          </button>
+        </div>
+
+        <div class="admin-detail-grid">
+          <section>
+            <h3>Seçilen Programlar</h3>
+            <div class="lead-detail-programs" id="leadDetailPrograms"></div>
+          </section>
+
+          <section>
+            <h3>Görüşme Geçmişi</h3>
+            <div class="lead-activity-list" id="leadActivityList"></div>
+          </section>
+        </div>
+
+        <form class="lead-message-form" id="leadMessageForm">
+          <div class="form-wide">
+            <h3>Adaya mesaj gönder</h3>
+          </div>
+          <label>
+            Kanal
+            <select name="channel" id="leadMessageChannel">
+              <option value="email">E-posta</option>
+              <option value="sms">SMS</option>
+            </select>
+          </label>
+          <label>
+            Şablon
+            <select name="templateId" id="leadMessageTemplate">
+              <option value="">Şablon seç</option>
+            </select>
+          </label>
+          <label class="form-wide">
+            Konu
+            <input
+              name="subject"
+              id="leadMessageSubject"
+              placeholder="E-posta konusu"
+            />
+          </label>
+          <label class="form-wide">
+            Mesaj
+            <textarea
+              name="body"
+              id="leadMessageBody"
+              rows="4"
+              placeholder="Mesaj metni"
+              required
+            ></textarea>
+          </label>
+          <div class="admin-program-actions form-wide">
+            <button class="btn btn-primary" type="submit" id="leadMessageSendBtn">
+              Mesaj Gönder
+            </button>
+            <span class="admin-status" id="leadMessageStatus" aria-live="polite"></span>
+          </div>
+        </form>
+
+        <form class="lead-activity-form" id="activityForm">
+          <div class="form-wide">
+            <h3>Yeni geçmiş kaydı</h3>
+          </div>
+          <label>
+            Tür
+            <select name="type">
+              <option value="note">Not</option>
+              <option value="call">Telefon</option>
+              <option value="meeting">Görüşme</option>
+              <option value="email">E-posta</option>
+              <option value="appointment">Randevu</option>
+            </select>
+          </label>
+          <label>
+            Başlık
+            <input name="title" required placeholder="Örn. İlk görüşme yapıldı" />
+          </label>
+          <label class="form-wide">
+            Detay
+            <textarea name="body" rows="3" placeholder="Kısa görüşme notu"></textarea>
+          </label>
+          <div class="admin-program-actions form-wide">
+            <button class="btn btn-primary" type="submit" id="activitySaveBtn">
+              Geçmişe Ekle
+            </button>
+          </div>
+        </form>
+      </div>
+    </dialog>
+
+    <script src="assets/js/admin.js"></script>
+  </body>
+</html>

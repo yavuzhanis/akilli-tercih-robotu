@@ -1,0 +1,210 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Program {
+  id                 String       @id
+  university         String       @default("Kapadokya Üniversitesi")
+  name               String
+  faculty            String
+  scoreType          String
+  educationType      String
+  campus             String
+  city               String       @default("Nevsehir")
+  duration           String
+  language           String
+  scholarshipOptions String
+  quota              Int
+  careers            String
+  baseScore          Float
+  rank               String
+  sourceYear         String
+  sourceStatus       String
+  category           String
+  priorities         String
+  summary            String
+  feeStatus          String?
+  baseScoreYear      String?
+  rankYear           String?
+  quotaYear          String?
+  isActive           Boolean      @default(true)
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+  choices            LeadChoice[]
+}
+
+model Lead {
+  id           String              @id
+  fullName     String?
+  phone        String?
+  email        String?
+  note         String?
+  assignedUserId String?
+  assignedUser   AdminUser?        @relation("LeadAssignee", fields: [assignedUserId], references: [id])
+  appointmentAt  DateTime?
+  appointmentNote String?
+  followUpAt   DateTime?
+  followUpNote String?
+  source       String              @default("website")
+  status       String              @default("new")
+  createdAt    DateTime            @default(now())
+  choices      LeadChoice[]
+  activities   LeadActivity[]
+  notifications AdminNotification[]
+  crmDeliveries CrmDeliveryLog[]
+  messageDeliveries MessageDeliveryLog[]
+
+  @@index([assignedUserId])
+  @@index([appointmentAt])
+}
+
+model LeadChoice {
+  id        Int     @id @default(autoincrement())
+  leadId    String
+  programId String
+  order     Int     @default(0)
+  lead      Lead    @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  program   Program @relation(fields: [programId], references: [id])
+
+  @@unique([leadId, programId])
+}
+
+model LeadActivity {
+  id        Int      @id @default(autoincrement())
+  leadId    String
+  type      String   @default("note")
+  title     String
+  body      String?
+  createdAt DateTime @default(now())
+  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+}
+
+model AdminUser {
+  id           String   @id
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         String   @default("admin")
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  assignedLeads Lead[]  @relation("LeadAssignee")
+  auditLogs    AdminAuditLog[]
+}
+
+model AdminNotification {
+  id        Int       @id @default(autoincrement())
+  type      String    @default("system")
+  title     String
+  body      String?
+  leadId    String?
+  dueAt     DateTime?
+  isRead    Boolean   @default(false)
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+  lead      Lead?     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@index([isRead, dueAt])
+  @@index([createdAt])
+  @@index([leadId])
+}
+
+model SiteSetting {
+  key       String   @id
+  value     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AdminAuditLog {
+  id         Int       @id @default(autoincrement())
+  userId     String?
+  userName   String?
+  userEmail  String?
+  action     String
+  entityType String
+  entityId   String?
+  title      String
+  detail     String?
+  metadata   String?
+  createdAt  DateTime  @default(now())
+  user       AdminUser? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+  @@index([userId])
+  @@index([action])
+  @@index([entityType])
+}
+
+model CrmIntegration {
+  id         String   @id
+  name       String   @default("CRM Webhook")
+  webhookUrl String?
+  secret     String?
+  isEnabled  Boolean  @default(false)
+  events     String   @default("[\"lead.created\",\"lead.updated\"]")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model CrmDeliveryLog {
+  id           Int      @id @default(autoincrement())
+  event        String
+  targetUrl    String?
+  status       String   @default("skipped")
+  statusCode   Int?
+  requestBody  String?
+  responseBody String?
+  error        String?
+  leadId       String?
+  createdAt    DateTime @default(now())
+  lead         Lead?    @relation(fields: [leadId], references: [id], onDelete: SetNull)
+
+  @@index([event])
+  @@index([status])
+  @@index([leadId])
+  @@index([createdAt])
+}
+
+model MessageTemplate {
+  id        String   @id
+  channel   String
+  name      String
+  subject   String?
+  body      String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deliveries MessageDeliveryLog[]
+
+  @@index([channel])
+  @@index([isActive])
+}
+
+model MessageDeliveryLog {
+  id         Int      @id @default(autoincrement())
+  templateId String?
+  leadId     String?
+  channel    String
+  recipient  String
+  subject    String?
+  body       String
+  status     String   @default("sent")
+  provider   String   @default("demo")
+  error      String?
+  sentAt     DateTime?
+  createdAt  DateTime @default(now())
+  template   MessageTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+  lead       Lead?            @relation(fields: [leadId], references: [id], onDelete: SetNull)
+
+  @@index([templateId])
+  @@index([leadId])
+  @@index([channel])
+  @@index([status])
+  @@index([createdAt])
+}

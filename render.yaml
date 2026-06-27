@@ -1,0 +1,39 @@
+services:
+  - type: web
+    name: akilli-tercih-rehberi
+    runtime: node
+    plan: free
+    region: frankfurt
+    buildCommand: npm install && npm run preflight:deploy
+    startCommand: npm run start:render
+    healthCheckPath: /api/health
+    renderSubdomainPolicy: enabled
+    envVars:
+      - key: HOST
+        value: 0.0.0.0
+      - key: NODE_ENV
+        value: development
+      - key: ADMIN_EMAIL
+        value: admin@example.com
+      - key: ADMIN_NAME
+        value: Sistem Admin
+      - key: ADMIN_PASSWORD
+        value: admin123
+      - key: ADMIN_SESSION_SECRET
+        value: render-preview-secret-change-before-production
+      - key: SMTP_TEST_MODE
+        value: "true"
+      - key: SMTP_TEST_RECIPIENT
+        value: akilli-tercih-test@example.com
+      - key: SMTP_FROM
+        value: akilli-tercih-test@example.com
+      - key: SMTP_FROM_NAME
+        value: Akilli Tercih Test
+      - key: SMS_PROVIDER
+        value: textbelt
+      - key: SMS_API_KEY
+        value: textbelt_test
+      - key: SMS_TEST_MODE
+        value: "true"
+      - key: SMS_TEST_PHONE
+        value: "+15555555555"

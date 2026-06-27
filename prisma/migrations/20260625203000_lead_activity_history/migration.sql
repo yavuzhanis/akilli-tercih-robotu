@@ -1,0 +1,10 @@
+-- CreateTable
+CREATE TABLE "LeadActivity" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "leadId" TEXT NOT NULL,
+    "type" TEXT NOT NULL DEFAULT 'note',
+    "title" TEXT NOT NULL,
+    "body" TEXT,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT "LeadActivity_leadId_fkey" FOREIGN KEY ("leadId") REFERENCES "Lead" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+);

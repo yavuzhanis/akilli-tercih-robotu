@@ -1,0 +1,29 @@
+{
+  "name": "akilli-tercih-rehberi",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Aday öğrenciler için bölüm keşif, karşılaştırma ve tercih listesi sistemi.",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node server/index.js",
+    "start:render": "npm run db:push && npm run db:seed && node server/index.js",
+    "preflight:deploy": "npm run check && npx prisma validate",
+    "check": "node --check server/index.js && node --check assets/js/program-data.js && node --check assets/js/app.js && node --check assets/js/admin.js && node --check prisma/seed.js && node --check prisma/ensure-db.js && node --check prisma/backup-db.js",
+    "db:ensure": "node prisma/ensure-db.js",
+    "db:generate": "prisma generate",
+    "db:migrate": "node prisma/ensure-db.js && prisma migrate dev --name init",
+    "db:setup": "node prisma/ensure-db.js && prisma migrate deploy && prisma db seed",
+    "db:push": "node prisma/ensure-db.js && prisma db push",
+    "db:seed": "prisma db seed",
+    "db:backup": "node prisma/backup-db.js",
+    "db:studio": "prisma studio"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.19.3",
+    "prisma": "^6.19.3",
+    "zod": "^4.4.3"
+  }
+}
