@@ -14,6 +14,8 @@ const prisma = new PrismaClient();
 const PORT = Number(process.env.PORT || 3000);
 const HOST = process.env.HOST || "127.0.0.1";
 const IS_PRODUCTION = process.env.NODE_ENV === "production";
+const DEFAULT_PUBLIC_ORIGIN = "https://akilli-tercih-rehberi.onrender.com";
+const OFFICIAL_PROGRAM_SOURCE_URL = "https://aday.kapadokya.edu.tr/puanlar-kontenjanlar";
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin123";
 const ADMIN_EMAIL = (process.env.ADMIN_EMAIL || "admin@example.com").toLowerCase();
 const ADMIN_NAME = process.env.ADMIN_NAME || "Sistem Admin";
@@ -101,6 +103,8 @@ const mimeTypes = {
   ".html": "text/html; charset=utf-8",
   ".css": "text/css; charset=utf-8",
   ".js": "text/javascript; charset=utf-8",
+  ".xml": "application/xml; charset=utf-8",
+  ".txt": "text/plain; charset=utf-8",
   ".json": "application/json; charset=utf-8",
   ".svg": "image/svg+xml",
   ".png": "image/png",
@@ -549,6 +553,25 @@ function sendJson(res, statusCode, payload, req = null) {
   res.end(JSON.stringify(payload));
 }
 
+function sendText(res, statusCode, body, contentType, req = null, headers = {}) {
+  const request = req || res.__request || null;
+  res.writeHead(statusCode, {
+    ...getResponseHeaders(request),
+    "Content-Type": contentType,
+    ...headers
+  });
+  res.end(body);
+}
+
+function sendRedirect(res, location, req = null, statusCode = 301) {
+  const request = req || res.__request || null;
+  res.writeHead(statusCode, {
+    ...getResponseHeaders(request),
+    Location: location
+  });
+  res.end();
+}
+
 function getSafeErrorMessage(statusCode, message) {
   if (IS_PRODUCTION && statusCode >= 500) return "Sunucu hatası.";
   return message;
@@ -933,6 +956,155 @@ function slugify(value) {
     .slice(0, 80) || `program-${Date.now()}`;
 }
 
+function escapeHtml(value) {
+  return String(value ?? "").replace(/[&<>"']/g, character => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    "\"": "&quot;",
+    "'": "&#039;"
+  })[character]);
+}
+
+function escapeXml(value) {
+  return String(value ?? "").replace(/[&<>"']/g, character => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    "\"": "&quot;",
+    "'": "&apos;"
+  })[character]);
+}
+
+function normalizeOrigin(value) {
+  return String(value || "")
+    .trim()
+    .replace(/\/+$/g, "");
+}
+
+function getPublicBaseUrl(req) {
+  const configuredOrigin = normalizeOrigin(process.env.SEO_SITE_URL || process.env.PUBLIC_ORIGIN);
+  if (configuredOrigin) return configuredOrigin;
+
+  const host = req?.headers?.["x-forwarded-host"] || req?.headers?.host;
+  if (!host) return DEFAULT_PUBLIC_ORIGIN;
+
+  const protocol = req?.headers?.["x-forwarded-proto"]
+    || (String(host).includes("localhost") || String(host).startsWith("127.0.0.1") ? "http" : "https");
+  return normalizeOrigin(`${protocol}://${host}`);
+}
+
+function getProgramSeoSlug(program) {
+  return `${slugify(program.name)}-${program.id}`;
+}
+
+function getProgramSeoPath(program) {
+  return `/bolum/${getProgramSeoSlug(program)}`;
+}
+
+function getProgramSeoUrl(req, program) {
+  return `${getPublicBaseUrl(req)}${getProgramSeoPath(program)}`;
+}
+
+function getCategorySeoSlug(category) {
+  return slugify(category);
+}
+
+function getCategorySeoPath(category) {
+  return `/bolumler/${getCategorySeoSlug(category)}`;
+}
+
+function getCategoryLabel(category) {
+  return {
+    bilisim: "Bilişim",
+    "bilişim": "Bilişim",
+    saglik: "Sağlık",
+    "sağlık": "Sağlık",
+    havacilik: "Havacılık",
+    "havacılık": "Havacılık",
+    sosyal: "Sosyal Bilimler",
+    dil: "Dil ve Edebiyat",
+    tasarim: "Tasarım ve Mimarlık",
+    "tasarım": "Tasarım ve Mimarlık",
+    turizm: "Turizm ve Gastronomi"
+  }[category] || category;
+}
+
+function getPriorityLabel(priority) {
+  return {
+    kariyer: "Kariyer",
+    uygulama: "Uygulamalı Eğitim",
+    teknoloji: "Teknoloji",
+    insan: "Sosyal Etki"
+  }[priority] || priority;
+}
+
+function buildJsonLdScript(data) {
+  return `<script type="application/ld+json">${JSON.stringify(data).replace(/</g, "\\u003c")}</script>`;
+}
+
+function renderSeoLayout({ title, description, canonicalUrl, body, structuredData = [], robots = "index, follow" }) {
+  const safeTitle = escapeHtml(title);
+  const safeDescription = escapeHtml(description);
+  const safeCanonicalUrl = escapeHtml(canonicalUrl);
+  const jsonLd = structuredData.length
+    ? `\n    ${structuredData.map(buildJsonLdScript).join("\n    ")}`
+    : "";
+
+  return `<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>${safeTitle}</title>
+    <meta name="description" content="${safeDescription}" />
+    <meta name="robots" content="${escapeHtml(robots)}" />
+    <link rel="canonical" href="${safeCanonicalUrl}" />
+    <meta property="og:title" content="${safeTitle}" />
+    <meta property="og:description" content="${safeDescription}" />
+    <meta property="og:url" content="${safeCanonicalUrl}" />
+    <meta property="og:site_name" content="Akıllı Tercih Sistemi" />
+    <meta property="og:locale" content="tr_TR" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="${safeTitle}" />
+    <meta name="twitter:description" content="${safeDescription}" />
+    <meta name="theme-color" content="#f8fafc" />
+    <link rel="stylesheet" href="/assets/css/style.css" />${jsonLd}
+  </head>
+  <body class="seo-page">
+    <header class="site-header">
+      <nav class="nav container" aria-label="Program kataloğu menüsü">
+        <a class="brand" href="/" aria-label="Akıllı Tercih ana sayfa">
+          <span class="brand-mark">AT</span>
+          <span>
+            <strong>Akıllı Tercih</strong>
+            <small>Program Kataloğu</small>
+          </span>
+        </a>
+        <div class="nav-links">
+          <a href="/">Ana Sayfa</a>
+          <a href="/bolumler">Program Kataloğu</a>
+          <a href="/#contact">Bilgi Formu</a>
+        </div>
+      </nav>
+    </header>
+    <main class="seo-main">
+      ${body}
+    </main>
+    <footer class="site-footer">
+      <div class="container footer-grid">
+        <div>
+          <strong>Akıllı Tercih Rehberi</strong>
+          <p>Kapadokya Üniversitesi program keşif ve tercih sistemi.</p>
+        </div>
+        <a href="/">Ana sayfaya dön</a>
+      </div>
+    </footer>
+  </body>
+</html>`;
+}
+
 function parseCsv(text) {
   const rows = [];
   let row = [];
@@ -1311,6 +1483,326 @@ async function getProgramList(options = {}) {
   });
 
   return programs.map(serializeProgram);
+}
+
+async function getActiveProgramRecords() {
+  const programs = await prisma.program.findMany({
+    where: { isActive: true },
+    orderBy: [
+      { category: "asc" },
+      { name: "asc" }
+    ]
+  });
+
+  return programs.map(program => ({
+    raw: program,
+    data: serializeProgram(program)
+  }));
+}
+
+async function findProgramBySeoSlug(slug) {
+  const decodedSlug = decodeURIComponent(slug || "").replace(/^\/+|\/+$/g, "");
+  if (!decodedSlug) return null;
+
+  const idMatch = decodedSlug.match(/kun-\d+$/);
+  const directId = idMatch ? idMatch[0] : decodedSlug;
+  const directProgram = await prisma.program.findFirst({
+    where: {
+      id: directId,
+      isActive: true
+    }
+  });
+
+  if (directProgram) {
+    return {
+      raw: directProgram,
+      data: serializeProgram(directProgram)
+    };
+  }
+
+  const programs = await getActiveProgramRecords();
+  return programs.find(({ data }) => (
+    getProgramSeoSlug(data) === decodedSlug
+    || slugify(data.name) === decodedSlug
+  )) || null;
+}
+
+function getProgramStructuredData(req, program) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "EducationalOccupationalProgram",
+    name: program.name,
+    description: program.summary,
+    url: getProgramSeoUrl(req, program),
+    educationalProgramMode: program.educationType,
+    timeToComplete: program.duration,
+    inLanguage: program.language,
+    provider: {
+      "@type": "EducationalOrganization",
+      name: program.university,
+      url: OFFICIAL_PROGRAM_SOURCE_URL,
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: program.city,
+        addressCountry: "TR"
+      }
+    },
+    offers: {
+      "@type": "Offer",
+      category: program.feeStatus || program.scholarshipOptions.join(", ") || "Program"
+    }
+  };
+}
+
+function renderProgramSeoPage(req, program) {
+  const canonicalUrl = getProgramSeoUrl(req, program);
+  const title = `${program.name} | ${program.university} Tercih Bilgileri`;
+  const description = `${program.university} ${program.name}: ${program.scoreType} puan türü, ${program.duration}, ${program.language}, ${program.quota} kontenjan, taban puan ${program.baseScore}.`;
+  const scholarships = program.scholarshipOptions.join(", ") || program.feeStatus || "Belirtilmedi";
+  const careers = program.careers.join(", ");
+  const priorities = program.priorities.map(getPriorityLabel).join(", ");
+
+  const body = `
+      <section class="seo-hero container">
+        <span class="eyebrow">${escapeHtml(program.sourceYear)}</span>
+        <h1>${escapeHtml(program.name)}</h1>
+        <p>${escapeHtml(program.summary)}</p>
+        <div class="seo-actions">
+          <a class="btn btn-primary" href="/#contact">Danışmanlık Formuna Git</a>
+          <a class="btn btn-light" href="/#programs">Akıllı Testi Aç</a>
+        </div>
+      </section>
+      <section class="container seo-detail-grid" aria-label="Program bilgileri">
+        <article class="seo-panel">
+          <h2>Program Özeti</h2>
+          <dl class="detail-list">
+            <div><dt>Üniversite</dt><dd>${escapeHtml(program.university)}</dd></div>
+            <div><dt>Fakülte / MYO</dt><dd>${escapeHtml(program.faculty)}</dd></div>
+            <div><dt>Şehir</dt><dd>${escapeHtml(program.city)}</dd></div>
+            <div><dt>Kampüs</dt><dd>${escapeHtml(program.campus)}</dd></div>
+            <div><dt>Puan Türü</dt><dd>${escapeHtml(program.scoreType)}</dd></div>
+            <div><dt>Eğitim Türü</dt><dd>${escapeHtml(program.educationType)}</dd></div>
+            <div><dt>Eğitim Dili</dt><dd>${escapeHtml(program.language)}</dd></div>
+            <div><dt>Süre</dt><dd>${escapeHtml(program.duration)}</dd></div>
+          </dl>
+        </article>
+        <article class="seo-panel">
+          <h2>2025 YKS Verileri</h2>
+          <dl class="detail-list">
+            <div><dt>Taban Puan</dt><dd>${escapeHtml(program.baseScore)} <small>${escapeHtml(program.baseScoreYear)}</small></dd></div>
+            <div><dt>Başarı Sırası</dt><dd>${escapeHtml(program.rank)} <small>${escapeHtml(program.rankYear)}</small></dd></div>
+            <div><dt>Kontenjan</dt><dd>${escapeHtml(program.quota)} <small>${escapeHtml(program.quotaYear)}</small></dd></div>
+            <div><dt>Burs / Ücret</dt><dd>${escapeHtml(scholarships)}</dd></div>
+            <div><dt>Kaynak</dt><dd><a href="${OFFICIAL_PROGRAM_SOURCE_URL}" target="_blank" rel="noreferrer">${escapeHtml(program.sourceStatus)}</a></dd></div>
+          </dl>
+        </article>
+      </section>
+      <section class="container seo-panel seo-copy">
+        <h2>${escapeHtml(program.name)} Kimler İçin Uygun?</h2>
+        <p>${escapeHtml(careers ? `${program.name} mezunları için öne çıkan kariyer alanları: ${careers}.` : program.summary)}</p>
+        <p>Bu program, ${escapeHtml(getCategoryLabel(program.category))} alanında tercih yapmayı düşünen adaylar için ${escapeHtml(program.scoreType)} puan türü ve ${escapeHtml(program.educationType.toLowerCase())} eğitim yapısıyla değerlendirilebilir.</p>
+        <p>Tercih listeni oluşturmak ve benzer programlarla karşılaştırmak için Akıllı Tercih ana sayfasındaki test ve karşılaştırma aracını kullanabilirsin.</p>
+        <p class="seo-muted">Öne çıkan kriterler: ${escapeHtml(priorities || "kariyer, tercih uyumu ve program verisi")}.</p>
+      </section>
+      <section class="container seo-related">
+        <h2>İlgili Bağlantılar</h2>
+        <div class="seo-link-grid">
+          <a href="${escapeHtml(getCategorySeoPath(program.category))}">${escapeHtml(getCategoryLabel(program.category))} programları</a>
+          <a href="/bolumler">Tüm program kataloğu</a>
+          <a href="/">Akıllı tercih testine dön</a>
+        </div>
+      </section>`;
+
+  return renderSeoLayout({
+    title,
+    description,
+    canonicalUrl,
+    body,
+    structuredData: [getProgramStructuredData(req, program)]
+  });
+}
+
+function renderProgramListItems(programs, req) {
+  return programs.map(program => `
+            <li>
+              <a href="${escapeHtml(getProgramSeoPath(program))}">
+                <strong>${escapeHtml(program.name)}</strong>
+                <span>${escapeHtml(program.scoreType)} · ${escapeHtml(program.duration)} · ${escapeHtml(program.language)} · ${escapeHtml(program.feeStatus || program.scholarshipOptions.join(", "))}</span>
+              </a>
+            </li>`).join("");
+}
+
+function renderProgramCatalogSeoPage(req, programs, category = "") {
+  const selectedPrograms = category
+    ? programs.filter(program => getCategorySeoSlug(program.category) === getCategorySeoSlug(category))
+    : programs;
+  const canonicalPath = category ? getCategorySeoPath(category) : "/bolumler";
+  const canonicalUrl = `${getPublicBaseUrl(req)}${canonicalPath}`;
+  const categoryTitle = category ? `${getCategoryLabel(category)} Programları` : "Kapadokya Üniversitesi Program Kataloğu";
+  const description = category
+    ? `${getCategoryLabel(category)} alanındaki Kapadokya Üniversitesi programlarını 2025 YKS puan, kontenjan, burs ve süre bilgileriyle incele.`
+    : "Kapadokya Üniversitesi programlarını 2025 YKS puan, kontenjan, burs, eğitim dili ve süre bilgileriyle katalogda incele.";
+  const categories = [...new Set(programs.map(program => program.category))].sort((a, b) => getCategoryLabel(a).localeCompare(getCategoryLabel(b), "tr"));
+
+  const body = `
+      <section class="seo-hero container">
+        <span class="eyebrow">Program Kataloğu</span>
+        <h1>${escapeHtml(categoryTitle)}</h1>
+        <p>${escapeHtml(description)}</p>
+        <div class="seo-actions">
+          <a class="btn btn-primary" href="/#wizard">Akıllı Testi Başlat</a>
+          <a class="btn btn-light" href="/#programs">Kartlı Görünüme Dön</a>
+        </div>
+      </section>
+      <section class="container seo-panel">
+        <h2>Alanlara Göre Programlar</h2>
+        <div class="seo-link-grid">
+          <a href="/bolumler">Tüm Programlar</a>
+          ${categories.map(item => `<a href="${escapeHtml(getCategorySeoPath(item))}">${escapeHtml(getCategoryLabel(item))}</a>`).join("")}
+        </div>
+      </section>
+      <section class="container seo-panel">
+        <h2>${escapeHtml(selectedPrograms.length)} Program</h2>
+        <ul class="seo-program-list">
+          ${renderProgramListItems(selectedPrograms, req)}
+        </ul>
+      </section>`;
+
+  return renderSeoLayout({
+    title: `${categoryTitle} | Akıllı Tercih Sistemi`,
+    description,
+    canonicalUrl,
+    body,
+    structuredData: [{
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      name: categoryTitle,
+      description,
+      url: canonicalUrl,
+      mainEntity: selectedPrograms.slice(0, 50).map(program => ({
+        "@type": "EducationalOccupationalProgram",
+        name: program.name,
+        url: getProgramSeoUrl(req, program),
+        provider: {
+          "@type": "EducationalOrganization",
+          name: program.university
+        }
+      }))
+    }]
+  });
+}
+
+async function buildSitemapXml(req) {
+  const baseUrl = getPublicBaseUrl(req);
+  const programRecords = await getActiveProgramRecords();
+  const programs = programRecords.map(record => record.data);
+  const today = new Date().toISOString().slice(0, 10);
+  const categories = [...new Set(programs.map(program => program.category))];
+  const urls = [
+    { loc: `${baseUrl}/`, priority: "1.0", changefreq: "weekly", lastmod: today },
+    { loc: `${baseUrl}/bolumler`, priority: "0.9", changefreq: "weekly", lastmod: today },
+    ...categories.map(category => ({
+      loc: `${baseUrl}${getCategorySeoPath(category)}`,
+      priority: "0.8",
+      changefreq: "weekly",
+      lastmod: today
+    })),
+    ...programRecords.map(({ raw, data }) => ({
+      loc: getProgramSeoUrl(req, data),
+      priority: "0.7",
+      changefreq: "monthly",
+      lastmod: raw.updatedAt.toISOString().slice(0, 10)
+    }))
+  ];
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls.map(url => `  <url>
+    <loc>${escapeXml(url.loc)}</loc>
+    <lastmod>${escapeXml(url.lastmod)}</lastmod>
+    <changefreq>${escapeXml(url.changefreq)}</changefreq>
+    <priority>${escapeXml(url.priority)}</priority>
+  </url>`).join("\n")}
+</urlset>
+`;
+}
+
+function buildRobotsTxt(req) {
+  const baseUrl = getPublicBaseUrl(req);
+  return [
+    "User-agent: *",
+    "Allow: /",
+    "Disallow: /admin",
+    "Disallow: /admin.html",
+    "Disallow: /api/",
+    "",
+    `Sitemap: ${baseUrl}/sitemap.xml`,
+    ""
+  ].join("\n");
+}
+
+async function handleSeoRoute(req, res, url) {
+  if (req.method !== "GET") return false;
+
+  if (url.pathname === "/robots.txt") {
+    sendText(res, 200, buildRobotsTxt(req), "text/plain; charset=utf-8", req, {
+      "Cache-Control": "public, max-age=3600"
+    });
+    return true;
+  }
+
+  if (url.pathname === "/sitemap.xml") {
+    sendText(res, 200, await buildSitemapXml(req), "application/xml; charset=utf-8", req, {
+      "Cache-Control": "public, max-age=3600"
+    });
+    return true;
+  }
+
+  if (url.pathname === "/bolumler" || url.pathname === "/bolumler/") {
+    if (url.pathname.endsWith("/")) {
+      sendRedirect(res, `${getPublicBaseUrl(req)}/bolumler`, req);
+      return true;
+    }
+    const programs = (await getActiveProgramRecords()).map(record => record.data);
+    sendText(res, 200, renderProgramCatalogSeoPage(req, programs), "text/html; charset=utf-8", req);
+    return true;
+  }
+
+  const categoryMatch = url.pathname.match(/^\/bolumler\/([^/]+)\/?$/);
+  if (categoryMatch) {
+    const requestedCategory = decodeURIComponent(categoryMatch[1]);
+    const programs = (await getActiveProgramRecords()).map(record => record.data);
+    const category = [...new Set(programs.map(program => program.category))]
+      .find(item => getCategorySeoSlug(item) === getCategorySeoSlug(requestedCategory));
+
+    if (!category) return false;
+
+    const canonicalPath = getCategorySeoPath(category);
+    if (url.pathname !== canonicalPath) {
+      sendRedirect(res, `${getPublicBaseUrl(req)}${canonicalPath}`, req);
+      return true;
+    }
+
+    sendText(res, 200, renderProgramCatalogSeoPage(req, programs, category), "text/html; charset=utf-8", req);
+    return true;
+  }
+
+  const programMatch = url.pathname.match(/^\/bolum\/([^/]+)\/?$/);
+  if (programMatch) {
+    const record = await findProgramBySeoSlug(programMatch[1]);
+    if (!record) return false;
+
+    const canonicalPath = getProgramSeoPath(record.data);
+    if (url.pathname !== canonicalPath) {
+      sendRedirect(res, `${getPublicBaseUrl(req)}${canonicalPath}`, req);
+      return true;
+    }
+
+    sendText(res, 200, renderProgramSeoPage(req, record.data), "text/html; charset=utf-8", req);
+    return true;
+  }
+
+  return false;
 }
 
 async function getSiteSettings() {
@@ -4220,21 +4712,16 @@ async function handleApi(req, res, url) {
 
   if (req.method === "GET" && url.pathname.startsWith("/api/programs/")) {
     const id = decodeURIComponent(url.pathname.replace("/api/programs/", ""));
-    const program = await prisma.program.findFirst({
-      where: {
-        id,
-        isActive: true
-      }
-    });
+    const record = await findProgramBySeoSlug(id);
 
-    if (!program) {
+    if (!record) {
       return sendError(res, 404, "Program bulunamadı.");
     }
 
     return sendJson(res, 200, {
       ok: true,
       version: "sqlite-prisma",
-      program: serializeProgram(program)
+      program: record.data
     });
   }
 
@@ -4329,6 +4816,10 @@ const server = http.createServer(async (req, res) => {
 
     if (url.pathname.startsWith("/api/")) {
       await handleApi(req, res, url);
+      return;
+    }
+
+    if (await handleSeoRoute(req, res, url)) {
       return;
     }
 

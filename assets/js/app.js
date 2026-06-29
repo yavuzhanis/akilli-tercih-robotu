@@ -304,6 +304,38 @@ function getProgramHash(id) {
   return `program-${encodeURIComponent(id)}`;
 }
 
+function slugifyText(value) {
+  const replacements = {
+    ç: "c",
+    ğ: "g",
+    ı: "i",
+    ö: "o",
+    ş: "s",
+    ü: "u",
+    Ç: "c",
+    Ğ: "g",
+    İ: "i",
+    Ö: "o",
+    Ş: "s",
+    Ü: "u"
+  };
+
+  return String(value)
+    .replace(/[çğıöşüÇĞİÖŞÜ]/g, character => replacements[character] || character)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 80) || "program";
+}
+
+function getProgramSeoSlug(program) {
+  return `${slugifyText(program.name)}-${program.id}`;
+}
+
+function getProgramSeoUrl(program) {
+  return `/bolum/${getProgramSeoSlug(program)}`;
+}
+
 function renderStateCard(title, text) {
   return `
     <div class="state-card">
@@ -596,7 +628,7 @@ function renderPrograms() {
           <button class="btn btn-primary ${isAdded ? "added" : ""}" type="button" data-add="${safe.id}">
             ${isAdded ? "Listeye Eklendi" : "Tercih Listeme Ekle"}
           </button>
-          <button class="btn link-btn" type="button" data-detail="${safe.id}">Detay</button>
+          <a class="btn link-btn" href="${getProgramSeoUrl(program)}" data-detail="${safe.id}">Detay</a>
         </div>
       </article>
     `;
@@ -939,6 +971,7 @@ programGrid.addEventListener("click", event => {
   }
 
   if (detailButton) {
+    event.preventDefault();
     openProgramDetail(detailButton.dataset.detail);
   }
 });
@@ -1095,7 +1128,8 @@ programModal.addEventListener("click", async event => {
   }
 
   if (shareButton) {
-    const shareUrl = new URL(`#${getProgramHash(shareButton.dataset.share)}`, window.location.href).href;
+    const program = programs.find(item => item.id === shareButton.dataset.share);
+    const shareUrl = new URL(program ? getProgramSeoUrl(program) : `#${getProgramHash(shareButton.dataset.share)}`, window.location.origin).href;
     try {
       await copyText(shareUrl);
       shareButton.textContent = "Link Kopyalandı";

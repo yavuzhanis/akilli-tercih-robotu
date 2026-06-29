@@ -10,12 +10,21 @@
     />
     <meta name="robots" content="index, follow" />
     <meta name="theme-color" content="#f8fafc" />
+    <link rel="canonical" href="https://akilli-tercih-rehberi.onrender.com/" />
     <meta property="og:title" content="Akıllı Tercih Sistemi" />
     <meta
       property="og:description"
       content="Aday öğrenciler için bölüm keşif, karşılaştırma ve tercih listesi oluşturma deneyimi."
     />
+    <meta property="og:url" content="https://akilli-tercih-rehberi.onrender.com/" />
+    <meta property="og:site_name" content="Akıllı Tercih Sistemi" />
+    <meta property="og:locale" content="tr_TR" />
     <meta property="og:type" content="website" />
+    <meta name="twitter:title" content="Akıllı Tercih Sistemi" />
+    <meta
+      name="twitter:description"
+      content="Kapadokya Üniversitesi programlarını 2025 YKS puan, kontenjan ve tercih kriterlerine göre keşfet."
+    />
     <meta name="twitter:card" content="summary_large_image" />
     <link
       rel="icon"
@@ -29,6 +38,38 @@
       } catch (error) {}
     </script>
     <link rel="stylesheet" href="assets/css/style.css" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "@id": "https://akilli-tercih-rehberi.onrender.com/#website",
+            "name": "Akıllı Tercih Sistemi",
+            "url": "https://akilli-tercih-rehberi.onrender.com/",
+            "inLanguage": "tr-TR",
+            "potentialAction": {
+              "@type": "SearchAction",
+              "target": "https://akilli-tercih-rehberi.onrender.com/?arama={search_term_string}#programs",
+              "query-input": "required name=search_term_string"
+            }
+          },
+          {
+            "@type": "EducationalOrganization",
+            "@id": "https://akilli-tercih-rehberi.onrender.com/#organization",
+            "name": "Kapadokya Üniversitesi",
+            "url": "https://aday.kapadokya.edu.tr/puanlar-kontenjanlar",
+            "email": "info@kapadokya.edu.tr",
+            "telephone": "0384 353 5009",
+            "address": {
+              "@type": "PostalAddress",
+              "addressLocality": "Nevşehir",
+              "addressCountry": "TR"
+            }
+          }
+        ]
+      }
+    </script>
   </head>
   <body>
     <header class="site-header">
@@ -61,7 +102,8 @@
           <a href="#compare">Karşılaştır</a>
           <a href="#flow">Akış</a>
           <a href="#list">Tercih Listem</a>
-          <a href="#contact">Bilgi Formu</a>
+            <a href="#contact">Bilgi Formu</a>
+          <a href="/bolumler">Program Kataloğu</a>
           <a class="nav-admin-link" href="/admin">Admin Girişi</a>
         </div>
         <button
@@ -555,7 +597,10 @@
             <span id="footerAddress" data-setting="contactAddress">Kampüs danışma ofisi</span>
           </div>
         </div>
-        <a href="#top">Yukarı çık</a>
+        <div class="footer-links">
+          <a href="/bolumler">Program Kataloğu</a>
+          <a href="#top">Yukarı çık</a>
+        </div>
       </div>
     </footer>
 
