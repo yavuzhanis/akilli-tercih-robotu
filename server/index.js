@@ -1070,6 +1070,13 @@ function renderSeoLayout({ title, description, canonicalUrl, body, structuredDat
     <meta name="twitter:title" content="${safeTitle}" />
     <meta name="twitter:description" content="${safeDescription}" />
     <meta name="theme-color" content="#f8fafc" />
+    <script>
+      try {
+        if (localStorage.getItem("theme") === "dark") {
+          document.documentElement.dataset.theme = "dark";
+        }
+      } catch (error) {}
+    </script>
     <link rel="stylesheet" href="/assets/css/style.css" />${jsonLd}
   </head>
   <body class="seo-page">
@@ -1084,9 +1091,22 @@ function renderSeoLayout({ title, description, canonicalUrl, body, structuredDat
         </a>
         <div class="nav-links">
           <a href="/">Ana Sayfa</a>
-          <a href="/bolumler">Program Kataloğu</a>
-          <a href="/#contact">Bilgi Formu</a>
+          <a href="/#wizard">Test</a>
+          <a href="/#programs">Bölümler</a>
+          <a href="/#contact">Form</a>
+          <a href="/bolumler">Katalog</a>
+          <a class="nav-admin-link" href="/admin">Admin</a>
         </div>
+        <button
+          class="theme-toggle"
+          type="button"
+          id="themeToggle"
+          aria-label="Tema değiştir"
+          aria-pressed="false"
+        >
+          <span class="theme-dot" aria-hidden="true"></span>
+          <span id="themeToggleText">Koyu</span>
+        </button>
       </nav>
     </header>
     <main class="seo-main">
@@ -1098,9 +1118,39 @@ function renderSeoLayout({ title, description, canonicalUrl, body, structuredDat
           <strong>Akıllı Tercih Rehberi</strong>
           <p>Kapadokya Üniversitesi program keşif ve tercih sistemi.</p>
         </div>
-        <a href="/">Ana sayfaya dön</a>
+        <div class="footer-links">
+          <a href="/">Ana sayfaya dön</a>
+          <a href="/admin">Admin</a>
+        </div>
       </div>
     </footer>
+    <script>
+      (function () {
+        var button = document.getElementById("themeToggle");
+        var text = document.getElementById("themeToggleText");
+        function setTheme(theme) {
+          var nextTheme = theme === "dark" ? "dark" : "light";
+          document.documentElement.dataset.theme = nextTheme;
+          try {
+            localStorage.setItem("theme", nextTheme);
+          } catch (error) {}
+          if (!button || !text) return;
+          var isDark = nextTheme === "dark";
+          button.setAttribute("aria-pressed", String(isDark));
+          text.textContent = isDark ? "Açık" : "Koyu";
+        }
+        var savedTheme = "light";
+        try {
+          savedTheme = localStorage.getItem("theme");
+        } catch (error) {}
+        setTheme(savedTheme === "dark" ? "dark" : "light");
+        if (button) {
+          button.addEventListener("click", function () {
+            setTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark");
+          });
+        }
+      })();
+    </script>
   </body>
 </html>`;
 }
