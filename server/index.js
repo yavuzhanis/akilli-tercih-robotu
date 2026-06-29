@@ -15,7 +15,7 @@ const PORT = Number(process.env.PORT || 3000);
 const HOST = process.env.HOST || "127.0.0.1";
 const IS_PRODUCTION = process.env.NODE_ENV === "production";
 const DEFAULT_PUBLIC_ORIGIN = "https://akilli-tercih-rehberi.onrender.com";
-const GOOGLE_SITE_VERIFICATION = process.env.GOOGLE_SITE_VERIFICATION || "nvVTKxmHrUlb6OrZFfj5C5OaFLQGFw7sW0amjEZS7tw";
+const GOOGLE_SITE_VERIFICATION = process.env.GOOGLE_SITE_VERIFICATION || "-Tx4WHeO2o3sed34SxRmBV6boASle7d-S1kK6vx8TSo";
 const OFFICIAL_PROGRAM_SOURCE_URL = "https://aday.kapadokya.edu.tr/puanlar-kontenjanlar";
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin123";
 const ADMIN_EMAIL = (process.env.ADMIN_EMAIL || "admin@example.com").toLowerCase();
