@@ -326,11 +326,11 @@ const siteSettingsDefaults = {
   heroEyebrow: "Aday Öğrenciler İçin Premium Sistem",
   heroTitle: "Tercih kararını filtrele, karşılaştır ve danışman kaydına dönüştür.",
   heroDescription: "Kısa testi tamamla, uyum skorlarını incele, seçtiğin programları yan yana karşılaştır ve çıktıya hazır tercih listeni oluştur.",
-  contactEmail: "danisma@example.com",
-  contactPhone: "0 (555) 000 00 00",
-  contactAddress: "Kampüs danışma ofisi",
+  contactEmail: "info@kapadokya.edu.tr",
+  contactPhone: "0384 353 5009",
+  contactAddress: "Mustafapaşa Yerleşkesi, Nevşehir",
   footerTitle: "Akıllı Tercih Rehberi",
-  footerText: "Aday öğrenciler için bölüm keşif prototipi.",
+  footerText: "Kapadokya Üniversitesi program keşif ve tercih sistemi.",
   kvkkTitle: "KVKK Bilgilendirmesi",
   kvkkText: "Bu prototipte aday bilgileri tercih danışmanlığı sürecini yürütmek amacıyla alınır. Gerçek kullanımda açık rıza, aydınlatma metni, veri saklama süresi ve başvuru hakları kurum politikasına göre ayrıca yayımlanmalıdır."
 };
@@ -1812,10 +1812,28 @@ async function getSiteSettings() {
     return settings;
   }, {});
 
-  return {
+  const settings = {
     ...siteSettingsDefaults,
     ...savedSettings
   };
+
+  if (settings.contactEmail === "danisma@example.com") {
+    settings.contactEmail = siteSettingsDefaults.contactEmail;
+  }
+
+  if (settings.contactPhone === "0 (555) 000 00 00") {
+    settings.contactPhone = siteSettingsDefaults.contactPhone;
+  }
+
+  if (settings.contactAddress === "Kampüs danışma ofisi") {
+    settings.contactAddress = siteSettingsDefaults.contactAddress;
+  }
+
+  if (settings.footerText === "Aday öğrenciler için bölüm keşif prototipi.") {
+    settings.footerText = siteSettingsDefaults.footerText;
+  }
+
+  return settings;
 }
 
 async function updateSiteSettings(payload) {

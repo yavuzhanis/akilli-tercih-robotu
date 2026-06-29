@@ -99,12 +99,10 @@
         <div class="nav-links" id="navLinks">
           <a href="#wizard">Test</a>
           <a href="#programs">Bölümler</a>
-          <a href="#compare">Karşılaştır</a>
-          <a href="#flow">Akış</a>
-          <a href="#list">Tercih Listem</a>
-            <a href="#contact">Bilgi Formu</a>
-          <a href="/bolumler">Program Kataloğu</a>
-          <a class="nav-admin-link" href="/admin">Admin Girişi</a>
+          <a href="#list">Liste</a>
+          <a href="#contact">Form</a>
+          <a href="/bolumler">Katalog</a>
+          <a class="nav-admin-link" href="/admin">Admin</a>
         </div>
         <button
           class="theme-toggle"
@@ -114,7 +112,7 @@
           aria-pressed="false"
         >
           <span class="theme-dot" aria-hidden="true"></span>
-          <span id="themeToggleText">Koyu mod</span>
+          <span id="themeToggleText">Koyu</span>
         </button>
       </nav>
     </header>
@@ -180,50 +178,6 @@
               </li>
             </ol>
           </aside>
-        </div>
-      </section>
-
-      <section class="trust-band" aria-label="Veri ve süreç güveni">
-        <div class="container trust-grid">
-          <div>
-            <strong>Resmi Veri</strong>
-            <span>Kapadokya Üniversitesi 2025 YKS puan ve kontenjanları eklendi.</span>
-          </div>
-          <div>
-            <strong>Karar Akışı</strong>
-            <span>Test, liste, karşılaştırma ve form tek akışta birleşir.</span>
-          </div>
-          <div>
-            <strong>Backend Hazırlığı</strong>
-            <span>CRM/API bağlantısı için veri modeli ayrıştırıldı.</span>
-          </div>
-        </div>
-      </section>
-
-      <section class="university-band" aria-label="Üniversite bilgisi">
-        <div class="container university-panel">
-          <div>
-            <span class="eyebrow">Üniversite Bilgisi</span>
-            <h2 id="universityName">Kapadokya Üniversitesi</h2>
-            <p id="universityDescription">
-              Vakıf üniversitesi; Nevşehir ve İstanbul yerleşkelerinde ön lisans,
-              lisans ve lisansüstü programlar sunar.
-            </p>
-          </div>
-          <dl class="university-facts">
-            <div>
-              <dt>Kampüsler</dt>
-              <dd id="universityCampuses">Mustafapaşa, Ürgüp Sağlık, Ürgüp Fabrika, Uçhisar Sanat, Sabiha Gökçen</dd>
-            </div>
-            <div>
-              <dt>İletişim</dt>
-              <dd id="universityContact">0384 353 5009 · info@kapadokya.edu.tr</dd>
-            </div>
-            <div>
-              <dt>Kaynak</dt>
-              <dd><a id="universitySource" href="https://aday.kapadokya.edu.tr/puanlar-kontenjanlar" target="_blank" rel="noreferrer">Puanlar & Kontenjanlar</a></dd>
-            </div>
-          </dl>
         </div>
       </section>
 
@@ -326,42 +280,6 @@
               </button>
             </div>
           </form>
-        </div>
-      </section>
-
-      <section class="section flow-section" id="flow">
-        <div class="container">
-          <div class="section-head">
-            <span class="eyebrow">Karar Akışı</span>
-            <h2>Testten danışman kaydına kadar tek sistem</h2>
-            <p>
-              Aday öğrencinin sayfada ne yapacağı netleşir: önce filtreler,
-              sonra karşılaştırır, en sonunda danışman formuna hazır bir tercih
-              listesiyle ilerler.
-            </p>
-          </div>
-          <div class="flow-grid">
-            <article>
-              <span>01</span>
-              <h3>Profilini belirle</h3>
-              <p>Puan türü, alan, eğitim dili, süre ve burs tercihleri alınır.</p>
-            </article>
-            <article>
-              <span>02</span>
-              <h3>Programları incele</h3>
-              <p>Uyum skoru, veri güveni ve kariyer alanları kartlarda görünür.</p>
-            </article>
-            <article>
-              <span>03</span>
-              <h3>Karşılaştır</h3>
-              <p>Seçilen programlar puan, burs, kontenjan ve süreye göre yan yana gelir.</p>
-            </article>
-            <article>
-              <span>04</span>
-              <h3>Danışmana aktar</h3>
-              <p>Liste sıralanır, PDF çıktısı alınır ve form bilgisi kaydedilir.</p>
-            </article>
-          </div>
         </div>
       </section>
 
@@ -582,21 +500,40 @@
       <div class="container footer-grid">
         <div>
           <strong data-setting="footerTitle">Akıllı Tercih Rehberi</strong>
-          <p data-setting="footerText">Aday öğrenciler için bölüm keşif prototipi.</p>
+          <p data-setting="footerText">Kapadokya Üniversitesi program keşif ve tercih sistemi.</p>
           <div class="footer-contact" aria-label="İletişim bilgileri">
             <a
               id="footerEmail"
               data-setting="contactEmail"
-              href="mailto:danisma@example.com"
-            >danisma@example.com</a>
+              href="mailto:info@kapadokya.edu.tr"
+            >info@kapadokya.edu.tr</a>
             <a
               id="footerPhone"
               data-setting="contactPhone"
-              href="tel:05550000000"
-            >0 (555) 000 00 00</a>
-            <span id="footerAddress" data-setting="contactAddress">Kampüs danışma ofisi</span>
+              href="tel:03843535009"
+            >0384 353 5009</a>
+            <span id="footerAddress" data-setting="contactAddress">Mustafapaşa Yerleşkesi, Nevşehir</span>
           </div>
         </div>
+        <section class="footer-university" aria-labelledby="footerUniversityTitle">
+          <span class="footer-label">Üniversite Bilgisi</span>
+          <strong id="footerUniversityTitle"><span id="universityName">Kapadokya Üniversitesi</span></strong>
+          <p id="universityDescription">
+            Vakıf üniversitesi; Nevşehir ve İstanbul yerleşkelerinde ön lisans,
+            lisans ve lisansüstü programlar sunar.
+          </p>
+          <dl class="footer-facts">
+            <div>
+              <dt>Kampüsler</dt>
+              <dd id="universityCampuses">Mustafapaşa, Ürgüp Sağlık, Ürgüp Fabrika, Uçhisar Sanat, Sabiha Gökçen</dd>
+            </div>
+            <div>
+              <dt>Kaynak</dt>
+              <dd><a id="universitySource" href="https://aday.kapadokya.edu.tr/puanlar-kontenjanlar" target="_blank" rel="noreferrer">Puanlar & Kontenjanlar</a></dd>
+            </div>
+          </dl>
+          <span class="footer-university-contact" id="universityContact">0384 353 5009 · info@kapadokya.edu.tr</span>
+        </section>
         <div class="footer-links">
           <a href="/bolumler">Program Kataloğu</a>
           <a href="#top">Yukarı çık</a>

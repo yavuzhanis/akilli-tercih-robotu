@@ -190,7 +190,7 @@ function applyTheme(theme) {
 
   const isDark = nextTheme === "dark";
   themeToggle.setAttribute("aria-pressed", String(isDark));
-  themeToggleText.textContent = isDark ? "Açık mod" : "Koyu mod";
+  themeToggleText.textContent = isDark ? "Açık" : "Koyu";
 }
 
 function initTheme() {
