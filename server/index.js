@@ -15,6 +15,7 @@ const PORT = Number(process.env.PORT || 3000);
 const HOST = process.env.HOST || "127.0.0.1";
 const IS_PRODUCTION = process.env.NODE_ENV === "production";
 const DEFAULT_PUBLIC_ORIGIN = "https://akilli-tercih-rehberi.onrender.com";
+const GOOGLE_SITE_VERIFICATION = process.env.GOOGLE_SITE_VERIFICATION || "nvVTKxmHrUlb6OrZFfj5C5OaFLQGFw7sW0amjEZS7tw";
 const OFFICIAL_PROGRAM_SOURCE_URL = "https://aday.kapadokya.edu.tr/puanlar-kontenjanlar";
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin123";
 const ADMIN_EMAIL = (process.env.ADMIN_EMAIL || "admin@example.com").toLowerCase();
@@ -1059,6 +1060,7 @@ function renderSeoLayout({ title, description, canonicalUrl, body, structuredDat
     <title>${safeTitle}</title>
     <meta name="description" content="${safeDescription}" />
     <meta name="robots" content="${escapeHtml(robots)}" />
+    <meta name="google-site-verification" content="${escapeHtml(GOOGLE_SITE_VERIFICATION)}" />
     <link rel="canonical" href="${safeCanonicalUrl}" />
     <meta property="og:title" content="${safeTitle}" />
     <meta property="og:description" content="${safeDescription}" />
