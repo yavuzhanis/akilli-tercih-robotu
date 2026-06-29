@@ -539,6 +539,10 @@ function getResponseHeaders(req, headers = {}) {
   };
 }
 
+function isHeadRequest(req) {
+  return req?.method === "HEAD";
+}
+
 function sendJson(res, statusCode, payload, req = null) {
   const request = req || res.__request || null;
   res.writeHead(statusCode, {
@@ -546,7 +550,7 @@ function sendJson(res, statusCode, payload, req = null) {
     "Content-Type": "application/json; charset=utf-8",
   });
 
-  if (statusCode === 204) {
+  if (statusCode === 204 || isHeadRequest(request)) {
     res.end();
     return;
   }
@@ -561,7 +565,7 @@ function sendText(res, statusCode, body, contentType, req = null, headers = {}) 
     "Content-Type": contentType,
     ...headers
   });
-  res.end(body);
+  res.end(isHeadRequest(request) ? undefined : body);
 }
 
 function sendRedirect(res, location, req = null, statusCode = 301) {
@@ -1794,7 +1798,7 @@ function buildRobotsTxt(req) {
 }
 
 async function handleSeoRoute(req, res, url) {
-  if (req.method !== "GET") return false;
+  if (req.method !== "GET" && req.method !== "HEAD") return false;
 
   if (url.pathname === "/robots.txt") {
     sendText(res, 200, buildRobotsTxt(req), "text/plain; charset=utf-8", req, {
